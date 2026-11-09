@@ -8,14 +8,13 @@
 
 import datetime as dt
 import pandas
-import random
-import smtplib
+import requests
 import os
+from dotenv import load_dotenv
 
 # import os and use it to get the Github repository secrets
-MY_EMAIL = os.environ.get("MY_EMAIL")
-MY_2EMAIL = os.environ.get("MY_2EMAIL")
-MY_PASSWORD = os.environ.get("MY_PASSWORD")
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+BOT_CHATID = os.environ.get("BOT_CHATID")
 
 today= dt.datetime.now()
 day = today.day
@@ -24,17 +23,11 @@ month = today.month
 birthdays = pandas.read_csv("birthdays.csv")
 birthdays_dic = pandas.DataFrame.to_dict(birthdays,orient="records")
 
+def send_telegram(telegram_message):
+    send_text = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + BOT_CHATID + "&parse_mode=Markdown&text=" + telegram_message
+    response_tele = requests.get(send_text)
+    response_tele.raise_for_status()
+
 for entry in birthdays_dic:
     if month == entry["month"] and day == entry["day"]:
-        with open(f"letter_templates/letter_{random.randint(1,3)}.txt") as letter:
-            chosen_letter = letter.read()
-            modified_letter = chosen_letter.replace("[NAME]",entry["name"])
-        with smtplib.SMTP("smtp.gmail.com", 587) as connection:
-            connection.set_debuglevel(debuglevel=1)
-            connection.starttls()
-            connection.login(MY_EMAIL, MY_PASSWORD)
-            connection.sendmail(
-                from_addr=MY_EMAIL,
-                to_addrs=MY_2EMAIL,
-                msg=f"Subject:Birthday Alert\n\nIt's {entry["name"]}'s birthday."
-            )
+        send_telegram(f"Birthday Alert! It's {entry["name"]}'s birthday.") 
