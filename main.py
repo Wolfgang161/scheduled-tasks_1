@@ -36,5 +36,5 @@ for entry in birthdays_dic:
             connection.sendmail(
                 from_addr=MY_EMAIL,
                 to_addrs=MY_2EMAIL,
-                msg=f"Subject:Geburtstag: {entry["name"]}\n\n{modified_letter}"
+                msg=f"Subject:Birthday Alert\n\nIt's {entry["name"]}'s birthday."
             )
