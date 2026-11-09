@@ -29,9 +29,10 @@ for entry in birthdays_dic:
         with open(f"letter_templates/letter_{random.randint(1,3)}.txt") as letter:
             chosen_letter = letter.read()
             modified_letter = chosen_letter.replace("[NAME]",entry["name"])
-        with smtplib.SMTP("smtp.gmail.com", port=587) as connection:
+        with smtplib.SMTP("smtp.gmail.com", 587) as connection:
+            connection.set_debuglevel(debuglevel=1)
             connection.starttls()
-            connection.login(user=MY_EMAIL, password=MY_PASSWORD)
+            connection.login(MY_EMAIL, MY_PASSWORD)
             connection.sendmail(
                 from_addr=MY_EMAIL,
                 to_addrs=MY_2EMAIL,
